@@ -320,7 +320,7 @@ export default function Home() {
         {/* Text centered, outside the image */}
         <div className="mx-auto flex max-w-5xl shrink-0 flex-col items-center text-center">
           <p className="mb-3 border border-border bg-muted px-5 py-1.5 text-sm text-muted-foreground">
-            وكالة الشنة للسفر والسياحة
+            وكالة أفق للسفر والسياحة
           </p>
 
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-[clamp(2.75rem,7.5vh,5.5rem)] md:leading-[1.1]">
@@ -664,7 +664,7 @@ export default function Home() {
             <h2 className="text-2xl font-extrabold leading-snug tracking-tight md:text-4xl">
               لماذا تختار
               <br />
-              وكالة الشنة؟
+              وكالة أفق؟
             </h2>
 
             <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground md:text-base">
@@ -753,7 +753,7 @@ export default function Home() {
 
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center text-white">
             <p className="text-sm font-semibold text-white/80">
-              وكالة الشنة للسفر والسياحة
+              وكالة أفق للسفر والسياحة
             </p>
 
             <h2 className="max-w-3xl text-3xl leading-tight font-extrabold md:text-5xl">

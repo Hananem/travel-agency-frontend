@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 
 const BRAND = "#1AA7BC";
-const AGENCY = "وكالة الشنة للسفر والسياحة";
+const AGENCY = "وكالة أفق للسفر والسياحة";
 
 const footerCols = [
   {
@@ -18,7 +18,7 @@ const footerCols = [
   {
     title: "الشركة",
     links: [
-      { label: "لماذا الشنة", href: "/about" },
+      { label: "لماذا أفق", href: "/about" },
       { label: "كن شريكًا معنا", href: "/contact" },
       { label: "الأسئلة الشائعة", href: "/faq" },
       { label: "المدونة", href: "/announcements" },

@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL =
-  process.env.BACKEND_URL ?? 'http://localhost:3000';
+  process.env.BACKEND_URL ?? 'https://travel-agency-backend-three.vercel.app';
 
 type RouteContext = {
   params: Promise<{ path?: string[] }>;

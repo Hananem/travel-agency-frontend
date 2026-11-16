@@ -200,7 +200,7 @@ export default function TripsPage() {
       {/* Page header */}
       <section className="mx-auto max-w-7xl px-5 pt-10 md:pt-14">
         <p className="mb-3 text-sm font-semibold text-primary">
-          وكالة الشنة للسفر والسياحة
+          وكالة أفق للسفر والسياحة
         </p>
 
         <h1 className="text-3xl font-extrabold tracking-tight md:text-5xl">

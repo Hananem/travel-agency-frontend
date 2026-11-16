@@ -167,7 +167,7 @@ export default function AnnouncementsPage() {
       <section className="bg-white px-5 pb-12 pt-14 sm:pb-16 sm:pt-20">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-sm font-semibold text-primary">
-            — وكالة الشنة للسياحة والأسفار —
+            — وكالة أفق للسياحة والأسفار —
           </p>
 
           <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl md:text-6xl">

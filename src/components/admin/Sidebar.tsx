@@ -69,7 +69,7 @@ export default function Sidebar() {
 
         <div>
           <h1 className="text-lg font-extrabold tracking-tight text-white">
-            وكالة الشنة
+            وكالة أفق
           </h1>
           <p className="mt-0.5 text-xs text-white/60">
             إدارة وكالة السياحة والأسفار

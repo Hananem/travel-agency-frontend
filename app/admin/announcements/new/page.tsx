@@ -35,7 +35,7 @@ async function uploadImage(file: File): Promise<string> {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch('http://localhost:3000/uploads', {
+  const response = await fetch('https://travel-agency-backend-three.vercel.app/uploads', {
     method: 'POST',
     body: formData,
   });

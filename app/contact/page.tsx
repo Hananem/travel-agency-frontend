@@ -22,7 +22,7 @@ const initialForm: ContactForm = {
 const contactInfo = [
   {
     title: 'العنوان',
-    text: 'وكالة الشنة للسفر والسياحة — قمار، ولاية الوادي',
+    text: 'وكالة أفق للسفر والسياحة — قمار، ولاية الوادي',
     icon: MapPin,
   },
   {
@@ -102,7 +102,7 @@ export default function ContactPage() {
         <div className="mx-auto flex min-h-[380px] max-w-7xl items-center justify-center text-center sm:min-h-[440px] lg:min-h-[500px]">
           <div className="mx-auto max-w-3xl px-6 py-16">
             <span className="mb-6 inline-flex rounded-none border border-border px-5 py-2 text-sm font-medium text-primary">
-              وكالة الشنة للسفر والسياحة
+              وكالة أفق للسفر والسياحة
             </span>
 
             <h1 className="text-4xl font-black leading-tight text-foreground sm:text-5xl lg:text-6xl">

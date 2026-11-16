@@ -15,11 +15,11 @@ const cairo = Cairo({
 
 export const metadata: Metadata = {
   title: {
-    default: "وكالة الشنة للسفر والسياحة",
-    template: "%s | وكالة الشنة للسفر والسياحة",
+    default: "وكالة أفق للسفر والسياحة",
+    template: "%s | وكالة أفق للسفر والسياحة",
   },
   description:
-    "وكالة الشنة للسفر والسياحة في قمار، ولاية الوادي، الجزائر.",
+    "وكالة أفق للسفر والسياحة في قمار، ولاية الوادي، الجزائر.",
 };
 
 export default function RootLayout({

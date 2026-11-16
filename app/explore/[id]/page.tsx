@@ -17,7 +17,7 @@ import {
 import { trips, included, excluded, formatPrice } from "@/lib/trips";
 
 const BRAND = "#1AA7BC";
-const AGENCY = "وكالة الشنة للسفر والسياحة";
+const AGENCY = "وكالة أفق للسفر والسياحة";
 
 export function generateStaticParams() {
   return trips.map((t) => ({ id: t.id }));

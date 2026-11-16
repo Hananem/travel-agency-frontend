@@ -1,5 +1,5 @@
 const BRAND = "#1AA7BC";
-const AGENCY = "وكالة الشنة للسفر والسياحة";
+const AGENCY = "وكالة أفق للسفر والسياحة";
 
 const navLinks = [
   { label: "الرئيسية", href: "/" },

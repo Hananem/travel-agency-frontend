@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
             <Plane size={22} />
           </span>
           <span className="text-lg font-extrabold tracking-tight">
-            وكالة الشنة
+            وكالة أفق
           </span>
         </div>
 
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
         </div>
 
         <p className="text-xs text-white/50">
-          © 2026 وكالة الشنة للسياحة والأسفار
+          © 2026 وكالة أفق للسياحة والأسفار
         </p>
       </section>
 
@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
               <Plane size={22} />
             </span>
             <span className="text-lg font-extrabold tracking-tight">
-              وكالة الشنة
+              وكالة أفق
             </span>
           </div>
 
@@ -185,7 +185,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="mt-10 text-xs text-muted-foreground lg:hidden">
-            © 2026 وكالة الشنة للسياحة والأسفار
+            © 2026 وكالة أفق للسياحة والأسفار
           </p>
         </div>
       </section>

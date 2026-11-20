@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const BACKEND_URL =
+  process.env.BACKEND_URL || "https://travel-agency-backend-three.vercel.app";
+
 const nextConfig: NextConfig = {
-  /* config options here */
   experimental: {
     agentFeedback: true,
   },
@@ -14,6 +16,15 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${BACKEND_URL}/:path*`,
+      },
+    ];
   },
 };
 

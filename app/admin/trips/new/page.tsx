@@ -30,7 +30,7 @@ type TripForm = {
   duration: string;
   description: string;
   isPublished: boolean;
-  startDate: string; // datetime-local: "2026-12-05T06:30"
+  startDate: string;
   endDate: string;
   capacity: string;
   features: string[];
@@ -54,31 +54,7 @@ const initialForm: TripForm = {
 
 const ROLE_SUGGESTIONS = ['مرشد سياحي', 'سائق', 'مسؤول المجموعة'];
 
-async function uploadImage(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const response = await fetch('https://travel-agency-backend-three.vercel.app/uploads', {
-    method: 'POST',
-    body: formData,
-  });
-
-  const result = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    throw new Error(
-      result?.message || 'تعذر رفع الصورة. حاولي مرة أخرى.',
-    );
-  }
-
-  const imageUrl = result?.url ?? result?.imageUrl;
-
-  if (typeof imageUrl !== 'string' || !imageUrl) {
-    throw new Error('لم يُرجع الخادم رابط الصورة بعد رفعها.');
-  }
-
-  return imageUrl;
-}
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
 
 // "2026-12-05T06:30" (توقيت جهاز المستخدم) -> ISO UTC
 function toIso(localValue: string): string {
@@ -122,26 +98,34 @@ export default function NewTripPage() {
         throw new Error('اختار صورة للرحلة أولًا.');
       }
 
-      const imageUrl = await uploadImage(imageFile);
+      const fd = new FormData();
+      fd.append('title', form.title.trim());
+      fd.append('slug', form.slug.trim());
+      fd.append('destination', form.destination.trim());
+      fd.append('price', form.price);
+      fd.append('duration', form.duration.trim());
+      fd.append('description', form.description.trim());
+      fd.append('isPublished', String(form.isPublished));
+      fd.append('startDate', toIso(form.startDate));
+      if (form.endDate) fd.append('endDate', toIso(form.endDate));
+      if (form.capacity) fd.append('capacity', form.capacity);
 
-      return tripsService.createTrip({
-        title: form.title.trim(),
-        slug: form.slug.trim(),
-        destination: form.destination.trim(),
-        price: Number(form.price),
-        duration: form.duration.trim(),
-        imageUrl,
-        description: form.description.trim(),
-        isPublished: form.isPublished,
-        startDate: toIso(form.startDate),
-        ...(form.endDate ? { endDate: toIso(form.endDate) } : {}),
-        ...(form.capacity ? { capacity: Number(form.capacity) } : {}),
-        features: form.features,
-        companions: form.companions.map((c) => ({
-          teamMemberId: c.teamMemberId,
-          ...(c.role.trim() ? { role: c.role.trim() } : {}),
-        })),
-      });
+      // المصفوفات تُرسل كنص JSON (الباك إند يحوّلها)
+      fd.append('features', JSON.stringify(form.features));
+      fd.append(
+        'companions',
+        JSON.stringify(
+          form.companions.map((c) => ({
+            teamMemberId: c.teamMemberId,
+            ...(c.role.trim() ? { role: c.role.trim() } : {}),
+          })),
+        ),
+      );
+
+      // الاسم يجب أن يكون image بالضبط
+      fd.append('image', imageFile);
+
+      return tripsService.createTrip(fd);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['trips'] });
@@ -187,8 +171,8 @@ export default function NewTripPage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setImageError('حجم الصورة يجب ألا يتجاوز 5 ميغابايت.');
+    if (file.size > MAX_IMAGE_SIZE) {
+      setImageError('حجم الصورة يجب ألا يتجاوز 4 ميغابايت.');
       return;
     }
 
@@ -487,7 +471,6 @@ export default function NewTripPage() {
           {form.companions.length > 0 && (
             <div className="space-y-3">
               {form.companions.map((companion, index) => {
-                // لا نعرض الأعضاء المختارين في صفوف أخرى
                 const takenByOthers = new Set(
                   form.companions
                     .filter((_, i) => i !== index)
@@ -582,7 +565,7 @@ export default function NewTripPage() {
                 </span>
                 <span className="text-sm font-bold">اضغط لاختيار صورة</span>
                 <span className="mt-2 text-xs text-muted-foreground">
-                  JPG أو PNG أو WebP — بحد أقصى 5 ميغابايت
+                  JPG أو PNG أو WebP — بحد أقصى 4 ميغابايت
                 </span>
               </>
             )}

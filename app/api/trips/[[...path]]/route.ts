@@ -17,10 +17,6 @@ async function proxyToBackend(request: NextRequest) {
 
     const token = (await cookies()).get('admin_session')?.value;
 
-    // الرحلات المنشورة وتفاصيلها متاحة للزوار دون تسجيل الدخول:
-    // - القائمة: /api/trips
-    // - الرحلة بالـ slug: /api/trips/slug/<slug>
-    // - الرحلة مباشرة: /api/trips/<slug أو id>
     const isPublicGet =
       request.method === 'GET' &&
       (apiPath === '' ||
@@ -28,7 +24,6 @@ async function proxyToBackend(request: NextRequest) {
         apiPath.startsWith('/slug/') ||
         /^\/[^/]+$/.test(apiPath));
 
-    // باقي المسارات تتطلب تسجيل دخول المدير.
     if (!isPublicGet && !token) {
       return NextResponse.json(
         { message: 'يرجى تسجيل الدخول.' },
@@ -36,7 +31,6 @@ async function proxyToBackend(request: NextRequest) {
       );
     }
 
-    // الرحلة المفردة: نحوّل /<slug> إلى /slug/<slug> في الـ Backend
     let backendPath = apiPath;
 
     if (
@@ -55,11 +49,17 @@ async function proxyToBackend(request: NextRequest) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    let body: string | undefined;
+    let body: ArrayBuffer | undefined;
 
     if (request.method === 'POST' || request.method === 'PATCH') {
-      headers['Content-Type'] = 'application/json';
-      body = await request.text();
+      // نمرّر نوع المحتوى الأصلي (JSON أو multipart مع الـ boundary)
+      const contentType = request.headers.get('content-type');
+      if (contentType) {
+        headers['Content-Type'] = contentType;
+      }
+
+      // نمرّر الجسم كبايتات كما هو بدون تحويله إلى نص
+      body = await request.arrayBuffer();
     }
 
     const response = await fetch(url, {
@@ -88,8 +88,7 @@ async function proxyToBackend(request: NextRequest) {
     return NextResponse.json(
       {
         message: 'تعذر الاتصال بالخادم.',
-        error:
-          error instanceof Error ? error.message : String(error),
+        error: error instanceof Error ? error.message : String(error),
       },
       { status: 503 },
     );

@@ -1,3 +1,4 @@
+
 const BASE_URL = '/api/trips';
 
 export type PublicTripsParams = {
@@ -54,91 +55,148 @@ export type TripsResponse = {
   pagination: Pagination;
 };
 
+const toBody = (data: unknown) =>
+  data instanceof FormData ? data : JSON.stringify(data);
+
 async function request<T = unknown>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const response = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
+  const isFormData = options.body instanceof FormData;
+  const url = `${BASE_URL}${path}`;
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new Error(data?.message || `API error: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      credentials: 'same-origin',
+      headers: {
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+
+      const message = Array.isArray(data?.message)
+        ? data.message.join(', ')
+        : data?.message;
+
+      const error = new Error(message || `API error: ${response.status}`);
+
+      console.error('[API ERROR]', {
+        url,
+        method: options.method || 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        response: data,
+        error,
+      });
+
+      throw error;
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('[REQUEST FAILED]', {
+      url,
+      method: options.method || 'GET',
+      error,
+    });
+
+    throw error;
   }
+}
 
-  if (response.status === 204) {
-    return undefined as T;
+// Logs errors for individual service methods
+async function logError<T>(
+  functionName: string,
+  callback: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await callback();
+  } catch (error) {
+    console.error(`[tripsService.${functionName}] Failed:`, error);
+    throw error;
   }
-
-  return response.json();
 }
 
 export const tripsService = {
-  // الرحلات المنشورة للزوار مع البحث والفلترة و pagination
-  getPublicTrips: (params: PublicTripsParams = {}) => {
-    const searchParams = new URLSearchParams();
+  getPublicTrips: (params: PublicTripsParams = {}) =>
+    logError('getPublicTrips', () => {
+      const searchParams = new URLSearchParams();
 
-    if (params.page !== undefined) {
-      searchParams.set('page', String(params.page));
-    }
+      if (params.page !== undefined) {
+        searchParams.set('page', String(params.page));
+      }
 
-    if (params.limit !== undefined) {
-      searchParams.set('limit', String(params.limit));
-    }
+      if (params.limit !== undefined) {
+        searchParams.set('limit', String(params.limit));
+      }
 
-    if (params.search?.trim()) {
-      searchParams.set('search', params.search.trim());
-    }
+      if (params.search?.trim()) {
+        searchParams.set('search', params.search.trim());
+      }
 
-    if (params.minPrice !== undefined) {
-      searchParams.set('minPrice', String(params.minPrice));
-    }
+      if (params.minPrice !== undefined) {
+        searchParams.set('minPrice', String(params.minPrice));
+      }
 
-    if (params.maxPrice !== undefined) {
-      searchParams.set('maxPrice', String(params.maxPrice));
-    }
+      if (params.maxPrice !== undefined) {
+        searchParams.set('maxPrice', String(params.maxPrice));
+      }
 
-    if (params.sort && params.sort !== 'default') {
-      searchParams.set('sort', params.sort);
-    }
+      if (params.sort && params.sort !== 'default') {
+        searchParams.set('sort', params.sort);
+      }
 
-    const query = searchParams.toString();
+      const query = searchParams.toString();
 
-    return request<TripsResponse>(query ? `/?${query}` : '/');
-  },
+      return request<TripsResponse>(query ? `/?${query}` : '/');
+    }),
 
-  // دوال لوحة الإدارة
-  getTrips: () => request<TripsResponse>('/admin/all'),
+  getTrips: () =>
+    logError('getTrips', () =>
+      request<TripsResponse>('/admin/all'),
+    ),
 
-  getTrip: (id: string) => request<Trip>(`/admin/${encodeURIComponent(id)}`),
+  getTrip: (id: string) =>
+    logError('getTrip', () =>
+      request<Trip>(`/admin/${encodeURIComponent(id)}`),
+    ),
 
   createTrip: (data: unknown) =>
-    request<Trip>('', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    logError('createTrip', () =>
+      request<Trip>('', {
+        method: 'POST',
+        body: toBody(data),
+      }),
+    ),
 
   updateTrip: (id: string, data: unknown) =>
-    request<Trip>(`/${encodeURIComponent(id)}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    }),
+    logError('updateTrip', () =>
+      request<Trip>(`/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: toBody(data),
+      }),
+    ),
 
-  // تغيير حالة نشر الرحلة
   updateTripStatus: (id: string, isPublished: boolean) =>
-    request<Trip>(`/${encodeURIComponent(id)}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ isPublished }),
-    }),
+    logError('updateTripStatus', () =>
+      request<Trip>(`/${encodeURIComponent(id)}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isPublished }),
+      }),
+    ),
 
   deleteTrip: (id: string) =>
-    request<void>(`/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-    }),
+    logError('deleteTrip', () =>
+      request<void>(`/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      }),
+    ),
 };
